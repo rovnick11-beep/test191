@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>กระดาษคำตอบนายสิบตำรวจ ชุด 19 (ระบบ 2 รอบ + Admin Bypass)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap');
+        
+        body { 
+            font-family: 'Sarabun', sans-serif; 
+            background-color: #f0f2f5; 
+            color: #333; 
+            margin: 0; 
+            padding: 20px; 
+            padding-bottom: 130px; 
+        }
+        .container { max-width: 1000px; margin: auto; }
+        h1 { text-align: center; color: #004b87; margin-bottom: 10px; }
+        .mode-status { text-align: center; font-size: 1.1em; color: #d32f2f; font-weight: bold; margin-bottom: 30px; }
+        
+        .subject-section { margin-bottom: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); overflow: hidden; background: #fff; transition: 0.3s; }
+        .subject-title { font-size: 1.2em; font-weight: bold; padding: 15px 20px; background-color: #004b87; color: white; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;}
+        .subject-body { padding: 20px; }
+        
+        .locked-section { opacity: 0.5; pointer-events: none; background-color: #fafafa; filter: grayscale(100%); }
+        .lock-badge { background: #d32f2f; color: white; padding: 4px 12px; border-radius: 4px; font-size: 0.85em; }
+        .unlock-badge { background: #2e7d32; color: white; padding: 4px 12px; border-radius: 4px; font-size: 0.85em; }
+
+        .grid-container { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 15px; 
+        }
+        
+        .question { 
+            background: #fff; 
+            padding: 15px; 
+            border-radius: 8px; 
+            border: 1px solid #e0e0e0; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+            transition: 0.3s;
+        }
+        .q-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #ccc; padding-bottom: 8px; }
+        .q-num { font-weight: bold; font-size: 1.1em; color: #333; }
+        .feedback-icon { font-size: 0.9em; font-weight: bold; color: #666; }
+        
+        .options { display: flex; gap: 8px; justify-content: space-between; }
+        .options label { 
+            flex: 1; text-align: center; padding: 10px 0; border-radius: 6px; border: 1px solid #ccc; 
+            cursor: pointer; background: #fafafa; transition: 0.2s all; font-size: 1.1em; font-weight: 600;
+        }
+        .options label:hover { background-color: #e3f2fd; border-color: #2196f3; color: #004b87; }
+        
+        .text-input-box { display: flex; gap: 10px; align-items: center; }
+        .text-input-box input { flex: 1; padding: 8px; font-size: 1.1em; font-family: 'Sarabun', sans-serif; border: 1px solid #ccc; border-radius: 5px; }
+        .text-input-box button { padding: 8px 15px; background: #004b87; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-family: 'Sarabun', sans-serif; }
+        .text-input-box button:hover { background: #003366; }
+
+        .hidden-question {
+            background-color: #f9f9f9;
+            border: 1px dashed #ddd;
+            opacity: 0.6;
+        }
+        .hidden-question .options, .hidden-question .text-input-box {
+            display: none !important;
+        }
+        .hidden-question .feedback-icon {
+            color: #2e7d32;
+        }
+
+        .scoreboard { 
+            position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; 
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.1); padding: 10px 15px; display: flex; 
+            justify-content: space-between; align-items: center; z-index: 1000; font-size: 1.05em; 
+            font-weight: bold; border-top: 3px solid #004b87; flex-wrap: wrap; gap: 10px;
+        }
+        .score-val { color: #d32f2f; font-size: 1.3em; }
+        
+        /* กล่อง Admin ด้านล่าง */
+        .admin-controls { display: flex; gap: 8px; align-items: center; background: #f0f2f5; padding: 6px 12px; border-radius: 6px; border: 1px solid #ddd; flex-wrap: wrap; }
+        .admin-controls input { padding: 6px 10px; font-size: 0.9em; border: 1px solid #ccc; border-radius: 4px; font-family: 'Sarabun', sans-serif; width: 100px; text-align: center; }
+        .btn-admin { padding: 8px 12px; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9em; font-weight: bold; font-family: 'Sarabun', sans-serif; transition: 0.2s; }
+        .btn-admin-unlock { background: #00796b; }
+        .btn-admin-unlock:hover { background: #004d40; }
+        .btn-admin-round2 { background: #d84315; }
+        .btn-admin-round2:hover { background: #bf360c; }
+
+        .btn-submit { 
+            padding: 12px 25px; background: #2e7d32; color: #fff; border: none; 
+            border-radius: 6px; cursor: pointer; font-size: 1em; font-weight: bold;
+            font-family: 'Sarabun', sans-serif; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .btn-submit:hover { background: #1b5e20; }
+        .btn-submit:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; color: #666; }
+
+        #scoreModal { display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; }
+        .modal-content { background-color: #fff; padding: 30px; border-radius: 12px; width: 90%; max-width: 450px; box-shadow: 0 5px 25px rgba(0,0,0,0.4); max-height: 90vh; overflow-y: auto; }
+        .modal-content h3 { margin-top: 0; color: #004b87; border-bottom: 2px solid #eee; padding-bottom: 10px; text-align: center; }
+        .modal-content p { display: flex; justify-content: space-between; margin: 12px 0; font-size: 1.1em; border-bottom: 1px dashed #f0f0f0; padding-bottom: 5px; }
+        
+        .btn-retry { display: block; width: 100%; padding: 12px; background: #f39c12; color: white; text-align: center; border: none; border-radius: 6px; margin-top: 20px; cursor: pointer; font-size: 1.1em; font-family: 'Sarabun', sans-serif; font-weight: bold; transition: 0.2s; }
+        .btn-retry:hover { background: #e67e22; }
+        .close-btn { display: block; width: 100%; padding: 12px; background: #d32f2f; color: white; text-align: center; border: none; border-radius: 6px; margin-top: 10px; cursor: pointer; font-size: 1.1em; font-family: 'Sarabun', sans-serif; transition: 0.2s; font-weight: bold; }
+        .close-btn:hover { background: #b71c1c; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>กระดาษคำตอบนายสิบตำรวจ ชุด 19</h1>
+    <div id="modeStatus" class="mode-status">รอบที่ 1: แบบเลือกตอบ ก ข ค ง ทุกข้อ</div>
+
+    <!-- ส่วนที่ 1 -->
+    <div class="subject-section" id="sec-math">
+        <div class="subject-title">ความสามารถทั่วไปและคณิตศาสตร์ (ข้อ 1 - 20)</div>
+        <div class="subject-body"><div class="grid-container" id="sub-1"></div></div>
+    </div>
+
+    <div class="subject-section" id="sec-thai">
+        <div class="subject-title">ภาษาไทย (ข้อ 21 - 40)</div>
+        <div class="subject-body"><div class="grid-container" id="sub-2"></div></div>
+    </div>
+
+    <!-- ส่วนที่ 2: อังกฤษ -->
+    <div id="sec-eng-container" class="locked-section">
+        <div class="subject-section">
+            <div class="subject-title">
+                <span>ภาษาอังกฤษ (ข้อ 41 - 55)</span>
+                <span id="badge-eng" class="lock-badge">🔒 ต้องได้วิชาคณิต+ไทย 30 คะแนนขึ้นไป</span>
+            </div>
+            <div class="subject-body"><div class="grid-container" id="sub-3"></div></div>
+        </div>
+    </div>
+
+    <!-- ส่วนที่ 3: คอมพิวเตอร์ -->
+    <div id="sec-com-container" class="locked-section">
+        <div class="subject-section">
+            <div class="subject-title">
+                <span>คอมพิวเตอร์และเทคโนโลยีสารสนเทศ (ข้อ 56 - 95)</span>
+                <span id="badge-com" class="lock-badge">🔒 ต้องได้ภาษาอังกฤษ 10 คะแนนขึ้นไป</span>
+            </div>
+            <div class="subject-body"><div class="grid-container" id="sub-4"></div></div>
+        </div>
+    </div>
+
+    <!-- ส่วนที่ 4: กฎหมาย -->
+    <div id="sec-law-container" class="locked-section">
+        <div class="subject-section">
+            <div class="subject-title">
+                <span>กฎหมายและสังคม (ข้อ 96 - 120)</span>
+                <span id="badge-law" class="lock-badge">🔒 ต้องได้คอมพิวเตอร์ 35 คะแนนขึ้นไป</span>
+            </div>
+            <div class="subject-body"><div class="grid-container" id="sub-5"></div></div>
+        </div>
+    </div>
+
+    <!-- ส่วนที่ 5: สารบรรณ -->
+    <div id="sec-admin-container" class="locked-section">
+        <div class="subject-section">
+            <div class="subject-title">
+                <span>ระเบียบงานสารบรรณ (ข้อ 121 - 150)</span>
+                <span id="badge-admin" class="lock-badge">🔒 ต้องได้กฎหมาย 20 คะแนนขึ้นไป</span>
+            </div>
+            <div class="subject-body"><div class="grid-container" id="sub-6"></div></div>
+        </div>
+    </div>
+</div>
+
+<div class="scoreboard">
+    <div>ทำไปแล้ว: <span id="lblAnswered" class="score-val">0</span> / 150 ข้อ</div>
+    
+    <!-- กล่อง Admin สำหรับปลดล็อคข้ามเงื่อนไข -->
+    <div class="admin-controls">
+        <span style="font-size: 0.9em; color: #555;">Admin:</span>
+        <input type="password" id="adminPwd" placeholder="รหัสผ่าน">
+        <button class="btn-admin btn-admin-unlock" onclick="adminUnlockAll()">ปลดล็อควิชา</button>
+        <button class="btn-admin btn-admin-round2" onclick="adminSkipToRoundTwo()">ไปรอบ 2</button>
+    </div>
+
+    <button id="btnSubmitExam" class="btn-submit" onclick="submitExam()" disabled>ส่งกระดาษคำตอบ</button>
+</div>
+
+<div id="scoreModal">
+    <div class="modal-content">
+        <h3>สรุปผลคะแนนสอบ</h3>
+        <div id="modalBody"></div>
+        <button class="btn-retry" onclick="startRoundTwo()">ทำอีกครั้ง (รอบพิมพ์คำตอบ)</button>
+        <button class="close-btn" onclick="closeModal()">ปิดหน้าต่าง</button>
+    </div>
+</div>
+
+<script>
+    // เฉลย Pre-Test ชุด 19
+    const answerKey = {
+        1:'ค', 2:'ค', 3:'ก', 4:'ข', 5:'ก', 6:'ค', 7:'ค', 8:'ก', 9:'ค', 10:'ข',
+        11:'ก', 12:'ง', 13:'ข', 14:'ข', 15:'ข', 16:'ข', 17:'ง', 18:'ข', 19:'ข', 20:'ค',
+        21:'ข', 22:'ข', 23:'ค', 24:'ค', 25:'ก', 26:'ค', 27:'ก', 28:'ก', 29:'ก', 30:'ค',
+        31:'ง', 32:'ง', 33:'ก', 34:'ก', 35:'ข', 36:'ข', 37:'ค', 38:'ข', 39:'ค', 40:'ค',
+        41:'ข', 42:'ค', 43:'ก', 44:'ข', 45:'ง', 46:'ค', 47:'ง', 48:'ข', 49:'ค', 50:'ก',
+        51:'ข', 52:'ง', 53:'ข', 54:'ค', 55:'ข',
+        56:'ค', 57:'ค', 58:'ค', 59:'ค', 60:'ข', 61:'ค', 62:'ค', 63:'ข', 64:'ข', 65:'ค',
+        66:'ข', 67:'ค', 68:'ข', 69:'ข', 70:'ค', 71:'ข', 72:'ค', 73:'ค', 74:'ข', 75:'ค',
+        76:'ค', 77:'ค', 78:'ค', 79:'ค', 80:'ข', 81:'ข', 82:'ค', 83:'ง', 84:'ค', 85:'ก',
+        86:'ข', 87:'ค', 88:'ข', 89:'ค', 90:'ข', 91:'ค', 92:'ค', 93:'ข', 94:'ง', 95:'ค',
+        96:'ข', 97:'ค', 98:'ค', 99:'ค', 100:'ค', 101:'ค', 102:'ข', 103:'ข', 104:'ค', 105:'ค',
+        106:'ข', 107:'ค', 108:'ก', 109:'ง', 110:'ก', 111:'ค', 112:'ค', 113:'ข', 114:'ค', 115:'ข',
+        116:'ค', 117:'ง', 118:'ก', 119:'ข', 120:'ข',
+        121:'ค', 122:'ค', 123:'ข', 124:'ค', 125:'ก', 126:'ค', 127:'ง', 128:'ก', 129:'ค', 130:'ข',
+        131:'ง', 132:'ง', 133:'ง', 134:'ค', 135:'ค', 136:'ง', 137:'ค', 138:'ง', 139:'ข', 140:'ข',
+        141:'ก', 142:'ค', 143:'ข', 144:'ง', 145:'ข', 146:'ก', 147:'ค', 148:'ค', 149:'ค', 150:'ข'
+    };
+
+    // ข้อสอบที่เป็นตัวเลขคำนวณแท้จริงในวิชาคณิตศาสตร์ ชุด 19
+    const numericQuestions = {
+        5: "3125",
+        6: "6.25",
+        7: "320",
+        8: "6",
+        9: "12",
+        10: "20",
+        11: "39",
+        13: "12.5",
+        18: "8",
+        19: "45",
+        20: "6"
+    };
+
+    const ranges = [
+        { id: 'math', start: 1, end: 20, container: 'sub-1', name: 'ความสามารถทั่วไป' },
+        { id: 'thai', start: 21, end: 40, container: 'sub-2', name: 'ภาษาไทย' },
+        { id: 'eng', start: 41, end: 55, container: 'sub-3', name: 'ภาษาอังกฤษ' },
+        { id: 'com', start: 56, end: 95, container: 'sub-4', name: 'คอมพิวเตอร์และเทคโนโลยีฯ' },
+        { id: 'law', start: 96, end: 120, container: 'sub-5', name: 'กฎหมายและสังคม' },
+        { id: 'admin', start: 121, end: 150, container: 'sub-6', name: 'ระเบียบงานสารบรรณ' }
+    ];
+
+    let isRoundTwo = false;
+    let isAdminUnlocked = false; 
+    let totalScore = 0;
+    let totalAnswered = 0;
+    let subjectScores = { math: 0, thai: 0, eng: 0, com: 0, law: 0, admin: 0 };
+
+    function renderQuestions() {
+        ranges.forEach(range => {
+            let box = document.getElementById(range.container);
+            let html = '';
+            for (let i = range.start; i <= range.end; i++) {
+                let isTextInput = isRoundTwo && (range.id === 'math') && (numericQuestions[i] !== undefined);
+                
+                html += `
+                    <div class="question" id="qdiv_${i}">
+                        <div class="q-header">
+                            <span class="q-num">ข้อ ${i}</span>
+                            <span class="feedback-icon" id="feedback_${i}">บันทึกคำตอบแล้ว</span>
+                        </div>`;
+                
+                if (isTextInput) {
+                    html += `
+                        <div class="text-input-box">
+                            <input type="text" id="input_${i}" placeholder="พิมพ์ตัวเลข">
+                            <button onclick="checkTextAnswer(${i}, '${range.id}')">ตอบ</button>
+                        </div>`;
+                } else {
+                    html += `
+                        <div class="options">
+                            <label onclick="checkChoiceAnswer(${i}, 'ก', '${range.id}')">ก</label>
+                            <label onclick="checkChoiceAnswer(${i}, 'ข', '${range.id}')">ข</label>
+                            <label onclick="checkChoiceAnswer(${i}, 'ค', '${range.id}')">ค</label>
+                            <label onclick="checkChoiceAnswer(${i}, 'ง', '${range.id}')">ง</label>
+                        </div>`;
+                }
+                html += `</div>`;
+            }
+            box.innerHTML = html;
+        });
+
+        document.getElementById('lblAnswered').innerText = "0";
+    }
+
+    renderQuestions();
+
+    window.checkChoiceAnswer = function(qNum, selectedChoice, subjectId) {
+        let qDiv = document.getElementById(`qdiv_${qNum}`);
+        if (qDiv.classList.contains('answered')) return;
+        
+        qDiv.classList.add('answered');
+        totalAnswered++;
+
+        if (selectedChoice === answerKey[qNum]) {
+            totalScore++;
+            subjectScores[subjectId]++;
+        }
+
+        qDiv.classList.add('hidden-question');
+        let feedbackSpan = document.getElementById(`feedback_${qNum}`);
+        feedbackSpan.innerText = "✔️ ตอบแล้ว";
+
+        document.getElementById('lblAnswered').innerText = totalAnswered;
+        updateUnlocks();
+    };
+
+    window.checkTextAnswer = function(qNum, subjectId) {
+        let qDiv = document.getElementById(`qdiv_${qNum}`);
+        if (qDiv.classList.contains('answered')) return;
+
+        let inputVal = document.getElementById(`input_${qNum}`).value.trim();
+        if (inputVal === "") {
+            alert("กรุณากรอกคำตอบก่อนกดส่งครับ");
+            return;
+        }
+
+        qDiv.classList.add('answered');
+        totalAnswered++;
+
+        let correctVal = numericQuestions[qNum].toString().trim();
+        if (inputVal === correctVal) {
+            totalScore++;
+            subjectScores[subjectId]++;
+        }
+
+        qDiv.classList.add('hidden-question');
+        let feedbackSpan = document.getElementById(`feedback_${qNum}`);
+        feedbackSpan.innerText = "✔️ ตอบแล้ว";
+
+        document.getElementById('lblAnswered').innerText = totalAnswered;
+        updateUnlocks();
+    };
+
+    function countAnsweredInRange(start, end) {
+        let count = 0;
+        for(let i = start; i <= end; i++) {
+            if(document.getElementById(`qdiv_${i}`).classList.contains('answered')) count++;
+        }
+        return count;
+    }
+
+    function updateUnlocks() {
+        if (isAdminUnlocked) return; 
+
+        let mathThaiAnswered = countAnsweredInRange(1, 40);
+        let mathThaiScore = subjectScores.math + subjectScores.thai;
+        let engContainer = document.getElementById('sec-eng-container');
+        let badgeEng = document.getElementById('badge-eng');
+
+        // เงื่อนไขใหม่ คณิต+ไทย ต้องได้ 30 คะแนน
+        if (mathThaiAnswered === 40) {
+            if (mathThaiScore >= 30) {
+                engContainer.classList.remove('locked-section');
+                badgeEng.className = 'unlock-badge';
+                badgeEng.innerText = `🔓 ผ่านเกณฑ์ (${mathThaiScore}/40 คะแนน)`;
+            } else {
+                engContainer.classList.add('locked-section');
+                badgeEng.className = 'lock-badge';
+                badgeEng.innerText = `❌ ไม่ผ่านเกณฑ์ (${mathThaiScore}/40 - ต้องได้ 30)`;
+            }
+        }
+
+        let engAnswered = countAnsweredInRange(41, 55);
+        let comContainer = document.getElementById('sec-com-container');
+        let badgeCom = document.getElementById('badge-com');
+
+        // อังกฤษ ต้องได้ 10 คะแนน
+        if (engAnswered === 15) {
+            if (subjectScores.eng >= 10) {
+                comContainer.classList.remove('locked-section');
+                badgeCom.className = 'unlock-badge';
+                badgeCom.innerText = `🔓 ผ่านเกณฑ์ (${subjectScores.eng}/15 คะแนน)`;
+            } else {
+                comContainer.classList.add('locked-section');
+                badgeCom.className = 'lock-badge';
+                badgeCom.innerText = `❌ ไม่ผ่านเกณฑ์ (${subjectScores.eng}/15 - ต้องได้ 10)`;
+            }
+        }
+
+        let comAnswered = countAnsweredInRange(56, 95);
+        let lawContainer = document.getElementById('sec-law-container');
+        let badgeLaw = document.getElementById('badge-law');
+
+        // เงื่อนไขใหม่ คอมพิวเตอร์ ต้องได้ 35 คะแนน
+        if (comAnswered === 40) {
+            if (subjectScores.com >= 35) {
+                lawContainer.classList.remove('locked-section');
+                badgeLaw.className = 'unlock-badge';
+                badgeLaw.innerText = `🔓 ผ่านเกณฑ์ (${subjectScores.com}/40 คะแนน)`;
+            } else {
+                lawContainer.classList.add('locked-section');
+                badgeLaw.className = 'lock-badge';
+                badgeLaw.innerText = `❌ ไม่ผ่านเกณฑ์ (${subjectScores.com}/40 - ต้องได้ 35)`;
+            }
+        }
+
+        let lawAnswered = countAnsweredInRange(96, 120);
+        let adminContainer = document.getElementById('sec-admin-container');
+        let badgeAdmin = document.getElementById('badge-admin');
+
+        // กฎหมาย ต้องได้ 20 คะแนน
+        if (lawAnswered === 25) {
+            if (subjectScores.law >= 20) {
+                adminContainer.classList.remove('locked-section');
+                badgeAdmin.className = 'unlock-badge';
+                badgeAdmin.innerText = `🔓 ผ่านเกณฑ์ (${subjectScores.law}/25 คะแนน)`;
+            } else {
+                adminContainer.classList.add('locked-section');
+                badgeAdmin.className = 'lock-badge';
+                badgeAdmin.innerText = `❌ ไม่ผ่านเกณฑ์ (${subjectScores.law}/25 - ต้องได้ 20)`;
+            }
+        }
+
+        let adminAnswered = countAnsweredInRange(121, 150);
+        let btnSubmit = document.getElementById('btnSubmitExam');
+
+        // สารบรรณ ต้องได้ 25 คะแนน
+        if (adminAnswered === 30 && subjectScores.admin >= 25) {
+            btnSubmit.removeAttribute('disabled');
+            badgeAdmin.className = 'unlock-badge';
+            badgeAdmin.innerText = `🔓 ผ่านเกณฑ์ (${subjectScores.admin}/30 คะแนน) พร้อมส่งสอบ!`;
+        } else if (adminAnswered === 30) {
+            btnSubmit.setAttribute('disabled', 'true');
+            badgeAdmin.className = 'lock-badge';
+            badgeAdmin.innerText = `❌ สารบรรณไม่ผ่านเกณฑ์ (${subjectScores.admin}/30 - ต้องได้ 25)`;
+        }
+    }
+
+    window.adminUnlockAll = function() {
+        let pwd = document.getElementById('adminPwd').value;
+        if (pwd === 'nikky') {
+            document.getElementById('adminPwd').value = '';
+            isAdminUnlocked = true;
+            forceUnlockUI();
+            alert("ปลดล็อคข้อสอบทุกส่วนเรียบร้อยแล้วครับ สามารถข้ามไปทำวิชาที่ต้องการได้เลย");
+        } else {
+            alert('รหัสผ่าน Admin ไม่ถูกต้อง!');
+        }
+    };
+
+    window.adminSkipToRoundTwo = function() {
+        let pwd = document.getElementById('adminPwd').value;
+        if (pwd === 'nikky') {
+            document.getElementById('adminPwd').value = '';
+            startRoundTwo(true); 
+            alert("เข้าสู่รอบที่ 2 (พิมพ์คำตอบ) และปลดล็อคข้อสอบทั้งหมดเรียบร้อยแล้ว!");
+        } else {
+            alert('รหัสผ่าน Admin ไม่ถูกต้อง!');
+        }
+    };
+
+    function forceUnlockUI() {
+        let sections = ['eng', 'com', 'law', 'admin'];
+        sections.forEach(sec => {
+            document.getElementById(`sec-${sec}-container`).classList.remove('locked-section');
+            let badge = document.getElementById(`badge-${sec}`);
+            badge.className = 'unlock-badge';
+            badge.innerText = "🔓 ปลดล็อคโดย Admin";
+        });
+        document.getElementById('btnSubmitExam').removeAttribute('disabled');
+    }
+
+    window.submitExam = function() {
+        let modalBody = document.getElementById('modalBody');
+        let detailsHtml = '';
+        let maxScores = { math: 20, thai: 20, eng: 15, com: 40, law: 25, admin: 30 };
+        
+        ranges.forEach(r => {
+            detailsHtml += `<p><span>${r.name}</span> <b>${subjectScores[r.id]} / ${maxScores[r.id]} คะแนน</b></p>`;
+        });
+        detailsHtml += `<p style="border-top: 2px solid #004b87; margin-top: 15px; padding-top: 10px; font-size: 1.2em; color: #004b87;"><span>คะแนนรวมทั้งหมด</span> <b>${totalScore} / 150 คะแนน</b></p>`;
+        
+        modalBody.innerHTML = detailsHtml;
+        document.getElementById('scoreModal').style.display = 'flex';
+    };
+
+    window.closeModal = function() {
+        document.getElementById('scoreModal').style.display = 'none';
+    };
+
+    window.startRoundTwo = function(fromAdmin = false) {
+        isRoundTwo = true;
+        totalScore = 0;
+        totalAnswered = 0;
+        subjectScores = { math: 0, thai: 0, eng: 0, com: 0, law: 0, admin: 0 };
+        
+        document.getElementById('scoreModal').style.display = 'none';
+        document.getElementById('modeStatus').innerText = "รอบที่ 2: แบบประเมินเข้มงวด (วิชาเลขข้อคำนวณต้องพิมพ์คำตอบ)";
+        
+        renderQuestions();
+
+        if (fromAdmin) {
+            isAdminUnlocked = true;
+            forceUnlockUI();
+        } else {
+            isAdminUnlocked = false;
+            document.getElementById('sec-eng-container').classList.add('locked-section');
+            document.getElementById('badge-eng').className = 'lock-badge';
+            document.getElementById('badge-eng').innerText = "🔒 ต้องได้วิชาคณิต+ไทย 30 คะแนนขึ้นไป";
+
+            document.getElementById('sec-com-container').classList.add('locked-section');
+            document.getElementById('badge-com').className = 'lock-badge';
+            document.getElementById('badge-com').innerText = "🔒 ต้องได้ภาษาอังกฤษ 10 คะแนนขึ้นไป";
+
+            document.getElementById('sec-law-container').classList.add('locked-section');
+            document.getElementById('badge-law').className = 'lock-badge';
+            document.getElementById('badge-law').innerText = "🔒 ต้องได้คอมพิวเตอร์ 35 คะแนนขึ้นไป";
+
+            document.getElementById('sec-admin-container').classList.add('locked-section');
+            document.getElementById('badge-admin').className = 'lock-badge';
+            document.getElementById('badge-admin').innerText = "🔒 ต้องได้กฎหมาย 20 คะแนนขึ้นไป";
+
+            document.getElementById('btnSubmitExam').setAttribute('disabled', 'true');
+        }
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+</script>
+
+</body>
+</html>
